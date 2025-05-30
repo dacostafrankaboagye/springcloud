@@ -11,13 +11,10 @@ spring:
           lower-case-service-id: true
           enabled: true
       routes:
-        - id: bookservice-actuator
+        - id: bookservice-test
           uri: lb://bookservice
-          predicates:
-            - name: Cookie
-              args:
-                name: mycookie
-                regexp: mycookievalue
+          predicates[0]: Path=/bookservice/book/test
+          predicates[1]: Header=App-Key,AcceleratorLab
 
 
 
