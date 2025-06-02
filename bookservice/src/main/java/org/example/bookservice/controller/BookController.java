@@ -13,18 +13,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/book")
+@RequestMapping("/api/v1/bookservice")
 public class BookController {
 
     private final Logger  logger = LoggerFactory.getLogger(BookController.class);
 
-    @GetMapping("test")
-    public Map<?,?> test(
+    // @GetMapping("/test")
+    public Map<String,String> test(
             @RequestHeader(value = "App-Key", required = false) String clientHeader,
             @RequestHeader(value = "X-Gateway-Header", required = false) String gatewayHeader
     ) throws InterruptedException {
 
-        Thread.sleep(10000);  // for the circuit breaker
+        // Thread.sleep(100000);  // for the circuit breaker
+
+
 
         Map<String, String> res = new HashMap<>();
         res.put("message", "Hello from Book Service");
@@ -40,9 +42,18 @@ public class BookController {
     }
 
     @GetMapping("/test2")
-    public ResponseEntity<?> testRetry(){
+    public ResponseEntity<String> testRetry(){
         // for the retry... to see if this is called the number of retry times
         return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("not available");
+    }
+
+    @GetMapping("/hello")
+    public String Hello(@RequestHeader("x-client-type") String clientTypeHeader,
+                        @RequestHeader("x-gateway-header") String gatewayHeader){
+
+        return "Hello . \nHeaders:\n" +
+                "x-client-type: " + clientTypeHeader + "\n" +
+                "x-gateway-header: " + gatewayHeader + "\n";
     }
 
 }
