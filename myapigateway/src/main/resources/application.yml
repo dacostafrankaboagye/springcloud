@@ -3,32 +3,26 @@ spring:
     name: myapigateway
   config:
     import: optional:file:secrets/.env[.properties]
-
   cloud:
     gateway:
       discovery:
         locator:
           lower-case-service-id: true
           enabled: true
-      routes:
-        - id: bookservice-test
-          uri: lb://bookservice
-          predicates[0]: Path=/bookservice/book/test
-          predicates[1]: Header=App-Key,AcceleratorLab
-
+      routes[0]:
+        id: bookservice-test
+        uri: lb://bookservice
+        predicates[0]: Path=/bookservice/book/test
+        predicates[1]: Header=App-Key,AcceleratorLab
 
 
 server:
   port: 9090
-
-
 management:
   endpoints:
     web:
       exposure:
         include: "*"
-
-
 eureka:
   client:
     register-with-eureka: true
