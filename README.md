@@ -55,8 +55,70 @@ predicates[1]: Header=App-Key,AcceleratorLab
 ```
 
 - add the dependency
+```xml
+<dependency>
+  <groupId>org.springframework.cloud</groupId>
+  <artifactId>spring-cloud-starter-circuitbreaker-reactor-resilience4j</artifactId>
+</dependency>
+```
+
+```text
+        predicates[1]: Header=App-Key,AcceleratorLab
+        filters:
+          - name: CircuitBreaker
+            args:
+              name: myCircuitBreaker
+              fallbackUri: forward:/inCaseOfFailureUseThis/booktest
+
+```
+
+- take a look at the fallback controller
+
+```java
+
+    @GetMapping("/fallback/book")
+    public String bookTest(){
+        return "📘 Book Service is currently unavailable. " +
+                "Please try again later okay.. dont worry !!.";
+
+    }
+```
+
+- to simulate, we stop the book service
+  - or I just put a sleep there
+
+![./images/circuit%20breakeroutpiut.png](./images/circuit%20breakeroutpiut.png)
 
 
+## retries requests after a configured timeout.
+
+```text
+
+         +------------------+
+Client → | Spring Gateway   |
+         |   +------------+ |---> [Try BookService]
+         |   | Circuit    | |
+         |   | Breaker    | |
+         |   +------------+ |
+         |     +--------+   |
+         |     | Retry  |   |
+         |     +--------+   |
+         |       ↓ fallback |
+         |   /fallback/book |
+         +------------------+
+
+```
+- what is going on here?
+
+| Setting          | Meaning                                                         |
+| ---------------- | --------------------------------------------------------------- |
+| `retries: 3`     | Retry 3 times before giving up                                  |
+| `statuses:`      | Retry only if gateway gets these status codes                   |
+| `backoff:`       | Wait 2s, then 4s, then 5s between retries (exponential backoff) |
+| `CircuitBreaker` | Kicks in if all retries fail                                    |
+
+
+- modify the fallback
 
 
 
